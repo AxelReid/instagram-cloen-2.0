@@ -15,7 +15,7 @@ const Signin = ({ providers }) => {
           className='dark:invert w-80 mt-28'
           alt=''
         />
-        <p className='font-sx italic cl-1'>
+        <p className='font-sx italic cl-1 text-center'>
           This is not a REAL app, it is built for educational purposes only.
         </p>
         <div className='mt-40'>
