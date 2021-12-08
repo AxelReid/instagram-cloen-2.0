@@ -15,12 +15,13 @@ import { signOut, signIn, useSession } from 'next-auth/react'
 import { useRouter } from 'next/router'
 import { useRecoilState } from 'recoil'
 import modalState from 'atoms/modalAtom'
+import themeState from 'atoms/themeAtom'
 
 const Header = () => {
   const router = useRouter()
   const { data: session } = useSession()
   const [open, setOpen] = useRecoilState(modalState)
-  const [dark, setDark] = useState(false)
+  const [dark, setDark] = useRecoilState(themeState)
 
   const pushTo = (route) => router.push(route)
 
@@ -64,10 +65,15 @@ const Header = () => {
           className='relative lg:hidden w-14 h-14 flex-shrink-0'
           onClick={() => pushTo('/')}
         >
-          <Image src='/images/logo.png' layout='fill' objectFit='contain' />
+          <Image
+            src='/images/logo.png'
+            layout='fill'
+            objectFit='contain'
+            priority
+          />
         </div>
 
-        <div className='relative flex items-center max-w-sm sm:mr-0 mr-4'>
+        <div className='relative flex items-center w-2/4 sm:max-w-sm sm:mr-0 mr-4'>
           <div className='absolute pl-3 flex items-center pointer-events-none cl-1'>
             <SearchIcon className='w-5 h-5 cl-2' />
           </div>
@@ -79,6 +85,7 @@ const Header = () => {
         </div>
 
         <div className='flex items-center space-x-2 md:space-x-4 justify-end mr-2'>
+          <MenuIcon className='h-6 w-6 cl-1 md:hidden cursor-pointer flex-shrink-0' />
           <div onClick={() => themeSwitch()}>
             {dark ? (
               <SunIcon className='cl-1 w-6 h-6 cursor-pointer' />
@@ -87,7 +94,6 @@ const Header = () => {
             )}
           </div>
           <HomeIcon className='btnNav' onClick={() => pushTo('/')} />
-          <MenuIcon className='h-6 w-6 cl-1 md:hidden cursor-pointer flex-shrink-0' />
           {session ? (
             <>
               <div className='btnNav relative'>
@@ -98,7 +104,7 @@ const Header = () => {
               </div>
               <PlusCircleIcon
                 onClick={() => setOpen(true)}
-                className='btnNav'
+                className='h-6 w-6 cl-1 cursor-pointer flex-shrink-0'
               />
               <UserGroupIcon className='btnNav' />
               <HeartIcon className='btnNav' />

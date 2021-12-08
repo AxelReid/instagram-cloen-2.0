@@ -10,7 +10,7 @@ const Stories = () => {
   useEffect(
     () =>
       setStories(
-        [...Array(20)].map((_, i) => {
+        [...Array(11)].map((_, i) => {
           const { avatar, username } = faker.helpers.contextualCard()
           return {
             id: i,

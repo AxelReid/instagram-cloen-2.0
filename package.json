@@ -9,6 +9,7 @@
     "@headlessui/react": "^1.4.2",
     "@heroicons/react": "^1.0.5",
     "@tailwindcss/forms": "^0.3.4",
+    "emoji-mart": "^3.0.1",
     "faker": "^5.5.3",
     "firebase": "^9.6.0",
     "next": "latest",

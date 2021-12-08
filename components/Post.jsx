@@ -23,6 +23,10 @@ import { db } from 'firebase.js'
 import { useSession } from 'next-auth/react'
 import { useEffect, useState } from 'react'
 import Moment from 'react-moment'
+import 'emoji-mart/css/emoji-mart.css'
+import { Picker } from 'emoji-mart'
+import themeState from 'atoms/themeAtom'
+import { useRecoilValue } from 'recoil'
 
 const Post = ({ id, post }) => {
   const { id: user_id, username, userImg, image, caption } = post
@@ -31,6 +35,8 @@ const Post = ({ id, post }) => {
   const [comments, setComments] = useState([])
   const [likes, setLikes] = useState([])
   const [liked, setLiked] = useState(false)
+  const [showEmojis, setShowEmojis] = useState(false)
+  const dark = useRecoilValue(themeState)
 
   useEffect(
     () =>
@@ -88,8 +94,12 @@ const Post = ({ id, post }) => {
     await deleteDoc(doc(db, 'posts', id))
   }
 
+  const addEmoji = (e) => {
+    setComment(comment + e.native)
+  }
+
   return (
-    <div className='bg-1 border b-1 rounded-sm my-7'>
+    <div className='relative bg-1 border b-1 rounded-sm my-7'>
       {/* header */}
       <div className='flex items-center p-5 cl-1'>
         <img
@@ -132,7 +142,7 @@ const Post = ({ id, post }) => {
         </div>
       )}
       {/* caption */}
-      <p className='p-5 truncate cl-1'>
+      <p className='p-5 pb-4 cl-1'>
         {likes.length > 0 && (
           <span className='font-bold block mb-1 cl-1'>
             {likes.length} likes
@@ -144,6 +154,11 @@ const Post = ({ id, post }) => {
 
       {/* comments */}
       {comments.length > 0 && (
+        <p className='cl-2 ml-5 mb-2'>
+          {comments.length} {comments.length > 1 ? 'comments' : 'comment'}
+        </p>
+      )}
+      {comments.length > 0 && (
         <div className='ml-10 max-h-28 scrollbar-thin  dark:scrollbar-thumb-gray-700 scrollbar-thumb-gray-300 overflow-y-scroll'>
           {comments.map((com) => (
             <div key={com.id} className='flex items-start space-x-2'>
@@ -153,13 +168,14 @@ const Post = ({ id, post }) => {
                 alt=''
               />
               <div className='flex-1'>
-                <div className='flex flex-wrap my-1 cl-1 text-sm flex-1 space-x-1'>
-                  <b className='cursor-pointer'>{com.data().username}</b>
+                <div className='flex flex-wrap my-1 cl-1 pr-4 text-sm flex-1 space-x-1'>
+                  <b>{com.data().username}</b>
                   <p>{com.data().comment}</p>
                 </div>
                 <div className='w-full pr-5 flex justify-end space-x-6 text-xs cl-2'>
                   {session?.user?.uid === com.data().id && (
                     <b
+                      className='cursor-pointer'
                       onClick={() =>
                         deleteDoc(doc(db, 'posts', id, 'comments', com.id))
                       }
@@ -176,13 +192,22 @@ const Post = ({ id, post }) => {
       )}
 
       {session && (
-        <form onSubmit={sendComment} className='flex items-center p-4 cl-1'>
-          <EmojiHappyIcon className='h-7' />
+        <form
+          onSubmit={sendComment}
+          className='relative flex items-center h-16 pr-4 cl-1'
+        >
+          <div
+            className='h-16 pl-4 pr-2 flex items-center justify-center cursor-pointer'
+            onMouseEnter={() => setShowEmojis(true)}
+            onMouseLeave={() => setShowEmojis(false)}
+          >
+            <EmojiHappyIcon className='h-7 w-7' />
+          </div>
           <input
             value={comment}
             onChange={(e) => setComment(e.target.value)}
             type='text'
-            className='border-none focus:ring-0 flex-1 bg-transparent outline-none'
+            className='border-none focus:ring-0 w-full sm:flex-1 bg-transparent outline-none'
             placeholder='Add a comment...'
           />
           <button
@@ -193,6 +218,22 @@ const Post = ({ id, post }) => {
             Post
           </button>
         </form>
+      )}
+      {showEmojis && (
+        <div
+          className='absolute bottom-14 left-1 rounded-2xl shadow-lg'
+          onMouseEnter={() => setShowEmojis(true)}
+          onMouseLeave={() => setShowEmojis(false)}
+        >
+          <Picker
+            onSelect={(e) => addEmoji(e)}
+            theme={dark ? 'dark' : 'light'}
+            style={{
+              maxWidth: '320px',
+              borderRadius: '16px',
+            }}
+          />
+        </div>
       )}
     </div>
   )
